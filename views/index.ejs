@@ -1,0 +1,28 @@
+<div class="main">
+<h1>Hi <%= name %></h1>
+<style>
+  .button{
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+  }
+  
+
+  .button:hover{
+    background-color: red;
+  }
+  .main{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  }
+
+</style>
+
+<form action="/logout?_method=DELETE" method="POST">
+  <div class="button">
+  <button type="submit">Log Out</button>
+</div>
+</form>
+</div>
