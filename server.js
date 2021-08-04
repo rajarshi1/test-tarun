@@ -43,8 +43,9 @@ app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 app.get('/auth/google/callback',
+checkNotAuthenticated,
 passport.authenticate('google', { 
-  successRedirect:'/success',
+  successRedirect:'/',
   failureRedirect: '/login' }),
 function (req, res) {
   res.redirect('/')
@@ -77,6 +78,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
   } catch {
     res.redirect('/register')
   }
+  console.log(users)
 })
 
 app.delete('/logout', (req, res) => {
