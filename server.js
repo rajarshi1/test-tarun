@@ -9,6 +9,7 @@ const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
+ require('./auth');
 
 const initializePassport = require('./passport-config')
 initializePassport(
@@ -34,6 +35,20 @@ app.use(methodOverride('_method'))
 app.get('/', checkAuthenticated, (req, res) => {
   res.render('index.ejs', { name: req.user.name })
 })
+
+app.get('/failed', (req, res) => res.send('Authentication failed'))
+app.get('/success',  (req, res) => res.send('Authentication successful'))
+
+app.get('/auth/google',
+passport.authenticate('google', { scope: ['profile', 'email'] }))
+
+app.get('/auth/google/callback',
+passport.authenticate('google', { 
+  successRedirect:'/success',
+  failureRedirect: '/login' }),
+function (req, res) {
+  res.redirect('/')
+});
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
   res.render('login.ejs')
