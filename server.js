@@ -2,6 +2,8 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerJSdoc = require("swagger-jsdoc");
 const express = require('express')
 const app = express()
 const bcrypt = require('bcryptjs')
@@ -10,6 +12,28 @@ const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
  require('./auth');
+
+// Extended: https://swagger.io/specification/#infoObject
+ const options = {
+	definition: {
+		openapi: "3.0.0",
+		info: {
+			title: "Login/Register API",
+			version: "1.0.0",
+			description: "A simple Express Login/Register API",
+		},
+		servers: [
+			{
+				url: "http://localhost:3000",
+			},
+		],
+	},
+	apis: ["server.js"],
+};
+
+const swaggerDocs = swaggerJSdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+ 
 
 const initializePassport = require('./passport-config')
 initializePassport(
@@ -32,6 +56,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 
+
+
+
 app.get('/', checkAuthenticated, (req, res) => {
   res.render('index.ejs', { name: req.user.name })
 })
@@ -50,6 +77,46 @@ passport.authenticate('google', {
 function (req, res) {
   res.redirect('/')
 });
+//Routes
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Logs in the User
+ *     tags: [Login]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:          
+ *     responses:
+ *       200:
+ *         description: Login of User successful
+ *         content:
+ *           application/json:
+ *             
+ *       500:
+ *         description: Some server error
+ */
+//Routes
+/**
+ * @swagger
+ * /login:
+ *   get:
+ *     summary: Checks the authentication
+ *     tags: [Login]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:          
+ *     responses:
+ *       200:
+ *         description: Authentication successful
+ *         content:
+ *           application/json:
+ *             
+ *       500:
+ *         description: Some server error
+ */
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
   res.render('login.ejs')
@@ -64,6 +131,27 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 app.get('/register', checkNotAuthenticated, (req, res) => {
   res.render('register.ejs')
 })
+
+//Routes
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Registers  the User
+ *     tags: [Register]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:          
+ *     responses:
+ *       200:
+ *         description: Registration of User successful
+ *         content:
+ *           application/json:
+ *             
+ *       500:
+ *         description: Some server error
+ */
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {
   try {
@@ -80,6 +168,26 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
   }
   console.log(users)
 })
+//Routes
+/**
+ * @swagger
+ * /logout:
+ *   delete:
+ *     summary: Logs out the User
+ *     tags: [Logout]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:          
+ *     responses:
+ *       200:
+ *         description: User logged out
+ *         content:
+ *           application/json:
+ *             
+ *       500:
+ *         description: Some server error
+ */
 
 app.delete('/logout', (req, res) => {
   req.logOut()
